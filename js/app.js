@@ -147,9 +147,9 @@
           <h3 class="product-card__title">${product.title}</h3>
           <div class="product-card__meta">
             <span>${product.weight}</span>
-            <span class="product-card__price">${product.price}</span>
+            ${menu_data.showPrices ? `<span class="product-card__price">${product.price}</span>` : ''}
           </div>
-          <button class="product-card__button" type="button">Заказать</button>
+          ${menu_data.showPrices ? `<button class="product-card__button" type="button">Заказать</button>` : ''}
         </div>
       </article>
     `;
@@ -340,12 +340,28 @@
         modal.classList.remove('is-scrolled');
       }
     });
-
     return modal;
   }
 
   // Create modal immediately so transitions work on first open
   const modalEl = initModal();
+
+  function expandModal() {
+    const scrollEl = modalEl.querySelector('[data-modal-scroll]');
+    const descEl = modalEl.querySelector('[data-modal-desc]');
+
+    if (!descEl || !descEl.innerHTML.trim()) return;
+
+    const isExpanded = scrollEl.scrollTop > 10;
+
+    scrollEl.scrollTo({
+      top: isExpanded ? 0 : scrollEl.clientHeight,
+      behavior: 'smooth'
+    });
+  }
+
+  modalEl.querySelector('[data-modal-card]').addEventListener('click', expandModal);
+  modalEl.querySelector('[data-modal-hint]').addEventListener('click', expandModal);
 
   function openProductModal(product) {
     const imageWrap = modalEl.querySelector('.modal__image-wrap');
@@ -361,7 +377,7 @@
       <h3 class="modal__title">${product.title}</h3>
       <div class="modal__meta">
         <span>${product.weight}</span>
-        <span class="modal__price">${product.price}</span>
+        ${menu_data.showPrices ? `<span class="modal__price">${product.price}</span>` : ''}
       </div>
       <p class="modal__category">${getCategory(product.category).label}</p>
     `;

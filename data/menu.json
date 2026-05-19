@@ -1,4 +1,5 @@
 {
+  "showPrices": false,
   "header": {
     "logo": {
       "image": "../assets/images/canape-logo.svg",
@@ -38,7 +39,7 @@
       { "id": "sets", "label": "Сеты и ассорти", "short": "Сеты" },
       { "id": "vegetables", "label": "Закуски из овощей и сыра", "short": "Овощи и сыр" },
       { "id": "fish", "label": "Закуски из рыбы и морепродуктов", "short": "Рыба и морепродукты" },
-      { "id": "meat", "label": "Закуски из мяса и птицы", "short": "Мясо и птицы" },
+      { "id": "meat", "label": "Закуски из мяса и птицы", "short": "Мясо и птица" },
       { "id": "croissants", "label": "Круассаны", "short": "Круассаны" },
       { "id": "desserts", "label": "Десерты", "short": "Десерты" },
       { "id": "kids", "label": "Детское меню", "short": "Детское меню" },
