@@ -356,7 +356,7 @@
     const productTilte = normalizeTitle(product.title)
     const productImage = products_data[productTilte]
 
-    imageWrap.innerHTML = `<img class="modal__image" src="${productImage}" alt="${product.title}" />`;
+    imageWrap.innerHTML = `<div class="modal__image" style="--image: url('${productImage}')"/>`;
     cardEl.innerHTML = `
       <h3 class="modal__title">${product.title}</h3>
       <div class="modal__meta">

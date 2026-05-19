@@ -972,6 +972,10 @@ h2 {
   height: 100%;
   display: block;
   object-fit: cover;
+
+  background-image: var(--image);
+  background-size: cover;
+  background-position: center;
 }
 
 /* Scroll-snap sheet that overlays the image from bottom */
@@ -1128,7 +1132,10 @@ h2 {
     min-height: 32px;
     font-size: 18px;
   }
-  .modal__card { padding: 20px 20px 16px; border-radius: 16px 16px 0 0; }
+  .modal__card { 
+    padding: 20px 20px 16px; 
+    border-radius: 16px 16px 0 0;
+   }
   .modal__title { font-size: 20px; }
   .logo__image { height: 56px; }
 }
