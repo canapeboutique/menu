@@ -1,0 +1,23 @@
+node_modules/
+.DS_Store
+*.log
+
+# Python scripts (local tooling only)
+*.py
+__pycache__/
+*.pyc
+venv
+
+# Local image processing
+webp.zip
+webp/
+generated_webp/
+canape_photos/
+default_refs/
+
+# Canape-responsive source (already integrated)
+canape-responsive/
+
+# Editor
+.vscode/
+.idea/
