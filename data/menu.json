@@ -14,8 +14,8 @@
       { "label": "Контакты", "href": "#contacts" }
     ],
     "contacts": {
-      "phone": { "label": "+7 (999) 123-45-67", "href": "tel:+79991234567" },
-      "email": { "label": "hello@canape-bar.ru", "href": "mailto:hello@canape-bar.ru" }
+      "phone": { "label": "+7 (903) 923-31-11", "href": "tel:+79039233111" },
+      "email": { "label": "yakimova101077@gmail.com", "href": "mailto:yakimova101077@gmail.com" }
     },
     "cta": {
       "label": "Заказать мероприятие",
@@ -32,8 +32,8 @@
     "sidebarTitle": "Меню",
     "download": {
       "label": "Скачать полное меню",
-      "size": "PDF / 12 МБ",
-      "href": "#"
+      "size": "PDF / 1 МБ",
+      "href": "../assets/files/menu.pdf"
     },
     "categories": [
       { "id": "sets", "label": "Сеты и ассорти", "short": "Сеты" },
@@ -195,9 +195,8 @@
       "description": "Кейтеринг и канапе-бар<br>для ваших особенных событий."
     },
     "socials": [
-      { "label": "Instagram", "href": "#", "icon": "◎" },
-      { "label": "Telegram", "href": "#", "icon": "↗" },
-      { "label": "WhatsApp", "href": "#", "icon": "◌" }
+      { "label": "Telegram", "href": "https://t.me/canapeboutique", "icon": "../assets/images/logo/telegram.svg" },
+      { "label": "Instagram", "href": "#", "icon": "../assets/images/logo/instagram.svg" }
     ],
     "nav": {
       "title": "Навигация",
@@ -212,9 +211,9 @@
     "contacts": {
       "title": "Контакты",
       "items": [
-        { "icon": "☎", "label": "+7 (999) 123-45-67", "href": "tel:+79991234567" },
-        { "icon": "✉", "label": "hello@canape-bar.ru", "href": "mailto:hello@canape-bar.ru" },
-        { "icon": "⌖", "label": "Москва, ул. Вкуса, 1" }
+        { "icon": "☎", "label": "+7 (903) 923-37-11", "href": "tel:+79039233711" },
+        { "icon": "✉", "label": "yakimova101077@gmail.com", "href": "mailto:yakimova101077@gmail.com" },
+        { "icon": "⌖", "label": "Красноярск, ул. - , 1" }
       ]
     },
     "requisites": {

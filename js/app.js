@@ -272,7 +272,7 @@
         ${logoHTML(logo)}
         <p>${brand.description}</p>
         <div class="socials">
-          ${socials.map(s => `<a href="${s.href}" aria-label="${s.label}">${s.icon}</a>`).join('')}
+          ${socials.map(s => `<a style="background-image: url('${s.icon}')" href="${s.href}" aria-label="${s.label}"></a>`).join('')}
         </div>
       </div>
 
@@ -399,29 +399,133 @@
     });
   }
 
-  function openEventModal(img) {
-    const imageWrap = modalEl.querySelector('.modal__image-wrap');
-    const cardEl = modalEl.querySelector('[data-modal-card]');
-    const descEl = modalEl.querySelector('[data-modal-desc]');
-    const hintEl = modalEl.querySelector('[data-modal-hint]');
+  // --- Event Carousel ---
+  let eventCarouselEl = null;
+  let currentEventIndex = 0;
 
-    imageWrap.innerHTML = `<img class="modal__image" src="${img.src}" alt="${img.title || 'Мероприятие'}" />`;
-    cardEl.innerHTML = img.title ? `<h3 class="modal__title">${img.title}</h3>` : '';
-    descEl.innerHTML = img.description
-      ? `<p class="modal__description">${img.description}</p>`
-      : '';
+  function initEventCarousel() {
+    const carousel = document.createElement('div');
+    carousel.className = 'event-carousel-overlay';
+    carousel.setAttribute('data-event-carousel', '');
+    carousel.innerHTML = `
+      <button class="event-carousel__close" type="button" data-carousel-close aria-label="Закрыть">×</button>
+      <button class="event-carousel__arrow event-carousel__arrow--prev" type="button" data-carousel-prev aria-label="Предыдущее">‹</button>
+      <button class="event-carousel__arrow event-carousel__arrow--next" type="button" data-carousel-next aria-label="Следующее">›</button>
+      <div class="event-carousel__track" data-carousel-track></div>
+    `;
+    document.body.appendChild(carousel);
+    return carousel;
+  }
 
-    hintEl.style.display = img.description ? '' : 'none';
+  eventCarouselEl = initEventCarousel();
 
-    const scrollEl = modalEl.querySelector('[data-modal-scroll]');
-    scrollEl.scrollTop = 0;
-    modalEl.classList.remove('is-scrolled');
+  function buildCarouselSlides() {
+    const track = eventCarouselEl.querySelector('[data-carousel-track]');
+    const images = menu_data.events.images;
 
-    requestAnimationFrame(() => {
-      modalEl.classList.add('is-open');
-      document.body.classList.add('is-locked');
+    track.innerHTML = images.map((img, i) => `
+      <div class="event-carousel__slide" data-slide-index="${i}">
+        <div class="event-carousel__card">
+          <div class="event-carousel__image" style="background-image: url('${img.src}')"></div>
+          <div class="event-carousel__info">
+            ${img.title ? `<h3 class="event-carousel__title">${img.title}</h3>` : ''}
+            ${img.description ? `<p class="event-carousel__desc">${img.description}</p>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Build slides once
+  buildCarouselSlides();
+
+  function scrollToSlide(index, smooth) {
+    const track = eventCarouselEl.querySelector('[data-carousel-track]');
+    const slides = track.querySelectorAll('.event-carousel__slide');
+    if (!slides[index]) return;
+
+    // Update active class
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('is-active', i === index);
+    });
+
+    // Scroll to the target slide
+    slides[index].scrollIntoView({
+      inline: 'center',
+      behavior: smooth ? 'smooth' : 'instant'
     });
   }
+
+  function openEventCarousel(index) {
+    currentEventIndex = index;
+    updateArrowState();
+
+    requestAnimationFrame(() => {
+      eventCarouselEl.classList.add('is-open');
+      document.body.classList.add('is-locked');
+      // Instant scroll on open (no animation needed for initial position)
+      scrollToSlide(currentEventIndex, false);
+    });
+  }
+
+  function closeEventCarousel() {
+    eventCarouselEl.classList.remove('is-open');
+    document.body.classList.remove('is-locked');
+  }
+
+  function navigateCarousel(direction) {
+    const images = menu_data.events.images;
+    const newIndex = currentEventIndex + direction;
+    if (newIndex < 0 || newIndex >= images.length) return;
+
+    currentEventIndex = newIndex;
+    updateArrowState();
+    scrollToSlide(currentEventIndex, true);
+  }
+
+  function updateArrowState() {
+    const images = menu_data.events.images;
+    const prevBtn = eventCarouselEl.querySelector('[data-carousel-prev]');
+    const nextBtn = eventCarouselEl.querySelector('[data-carousel-next]');
+
+    prevBtn.classList.toggle('is-hidden', currentEventIndex === 0);
+    nextBtn.classList.toggle('is-hidden', currentEventIndex === images.length - 1);
+  }
+
+  // Detect which slide is centered after scroll (for mobile swipe)
+  (function initCarouselScrollDetect() {
+    const track = eventCarouselEl.querySelector('[data-carousel-track]');
+    let scrollTimeout;
+
+    track.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const slides = track.querySelectorAll('.event-carousel__slide');
+        const trackRect = track.getBoundingClientRect();
+        const trackCenter = trackRect.left + trackRect.width / 2;
+        let closestIdx = currentEventIndex;
+        let closestDist = Infinity;
+
+        slides.forEach((slide, i) => {
+          const slideRect = slide.getBoundingClientRect();
+          const slideCenter = slideRect.left + slideRect.width / 2;
+          const dist = Math.abs(slideCenter - trackCenter);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestIdx = i;
+          }
+        });
+
+        if (closestIdx !== currentEventIndex) {
+          currentEventIndex = closestIdx;
+          updateArrowState();
+          slides.forEach((slide, i) => {
+            slide.classList.toggle('is-active', i === currentEventIndex);
+          });
+        }
+      }, 80);
+    });
+  })();
 
   function closeModal() {
     modalEl.classList.remove('is-open');
@@ -470,23 +574,46 @@
       if (product) openProductModal(product);
     }
 
-    // Event card click → open media lightbox
+    // Event card click → open carousel
     const eventCard = event.target.closest('[data-event-index]');
     if (eventCard) {
       const idx = parseInt(eventCard.dataset.eventIndex, 10);
-      const img = menu_data.events.images[idx];
-      if (img) openEventModal(img);
+      openEventCarousel(idx);
     }
 
     // Close modal
     if (event.target.closest('[data-modal-close]') || event.target.matches('[data-modal]')) {
       closeModal();
     }
+
+    // Carousel controls
+    if (event.target.closest('[data-carousel-close]')) {
+      closeEventCarousel();
+    }
+    if (event.target.closest('[data-carousel-prev]')) {
+      navigateCarousel(-1);
+    }
+    if (event.target.closest('[data-carousel-next]')) {
+      navigateCarousel(1);
+    }
+    // Close carousel on overlay or track background click (not on a card)
+    if (event.target.matches('[data-event-carousel]') ||
+        (event.target.matches('[data-carousel-track]') && !event.target.closest('.event-carousel__slide'))) {
+      closeEventCarousel();
+    }
   });
 
-  // Close modal on Escape
+  // Keyboard navigation
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeModal();
+    if (event.key === 'Escape') {
+      closeModal();
+      closeEventCarousel();
+    }
+    // Arrow keys for carousel
+    if (eventCarouselEl.classList.contains('is-open')) {
+      if (event.key === 'ArrowLeft') navigateCarousel(-1);
+      if (event.key === 'ArrowRight') navigateCarousel(1);
+    }
   });
 
   // --- Burger Menu ---
