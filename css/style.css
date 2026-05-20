@@ -1222,8 +1222,7 @@ h2 {
 .event-carousel__image {
   flex: 1;
   background-size: cover;
-  background-position: center;
-  min-height: 0;
+  background-position: center;;
 }
 
 .event-carousel__info {
