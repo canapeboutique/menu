@@ -641,6 +641,25 @@ h2 {
   }
   .hero__actions .button { width: 100%; min-height: 54px; }
 
+  .mobile-menu__download {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.08) !important;
+    font-size: 16px !important;
+    letter-spacing: .08em !important;
+  }
+  .mobile-menu__download-icon {
+    font-size: 20px;
+  }
+  .mobile-menu__download small {
+    opacity: .65;
+    font-size: 12px;
+    text-transform: none;
+    letter-spacing: .02em;
+    margin-left: auto;
+  }
+
   .category-strip {
     display: flex;
     overflow-x: auto;
@@ -860,6 +879,15 @@ h2 {
     font-weight: 700;
     letter-spacing: .16em;
     text-transform: uppercase;
+  }
+  .mobile-bottom-cta__download {
+    min-height: 42px !important;
+    margin-top: 6px;
+    background: transparent !important;
+    border: 1px solid var(--burgundy-soft);
+    color: var(--burgundy) !important;
+    font-size: 14px !important;
+    letter-spacing: .1em !important;
   }
 }
 

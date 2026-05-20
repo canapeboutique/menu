@@ -65,8 +65,14 @@
     if (!el) return;
 
     const { nav } = menu_data.header;
+    const { download } = menu_data.menu;
     el.innerHTML = nav.map(item => `<a href="${item.href}">${item.label}</a>`).join('') +
-      `<a href="${menu_data.header.cta.href}">Оставить заявку</a>`;
+      `<a href="${menu_data.header.cta.href}">Оставить заявку</a>` +
+      `<a class="mobile-menu__download" href="${download.href}" download>
+        <span class="mobile-menu__download-icon">↧</span>
+        ${download.label}
+        <small>${download.size}</small>
+      </a>`;
   }
 
   // --- Render Hero ---
@@ -276,10 +282,6 @@
         </div>
       </div>
 
-      <div class="footer__col">
-        <h3>${nav.title}</h3>
-        ${nav.links.map(l => `<a href="${l.href}">${l.label}</a>`).join('')}
-      </div>
 
       <div class="footer__col">
         <h3>${contacts.title}</h3>
@@ -306,7 +308,13 @@
     if (!el) return;
 
     const { label, href } = menu_data.mobileBottomCta;
-    el.innerHTML = `<a href="${href}" data-bottom-link>${label} <span>⌄</span></a>`;
+    const { download } = menu_data.menu;
+    el.innerHTML = `
+      <a href="${href}" data-bottom-link>${label} <span>⌄</span></a>
+      <a class="mobile-bottom-cta__download" href="${download.href}" download>
+        <span>↧</span> ${download.label}
+      </a>
+    `;
   }
 
   // --- Modal (pre-created for animation on first open) ---

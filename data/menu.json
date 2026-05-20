@@ -33,7 +33,7 @@
     "download": {
       "label": "Скачать полное меню",
       "size": "PDF / 1 МБ",
-      "href": "../assets/files/menu.pdf"
+      "href": "assets/files/menu.pdf"
     },
     "categories": [
       { "id": "sets", "label": "Сеты и ассорти", "short": "Сеты" },
