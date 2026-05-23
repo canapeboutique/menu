@@ -1313,8 +1313,10 @@ h2 {
 
 .event-carousel__image {
   flex: 1;
+  min-height: 200px;
   background-size: cover;
-  background-position: center;;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .event-carousel__info {
