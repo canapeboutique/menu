@@ -423,6 +423,8 @@ h2 {
 .events__slider { display: grid; grid-template-columns: 52px 1fr 52px; align-items: center; gap: 28px; }
 .events__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; transition: transform .35s ease; }
 .event-card {
+  position: relative;
+  overflow: hidden;
   min-height: 120px;
   background-image: var(--event-image), radial-gradient(circle at 40% 35%, #ffd894 0 8%, #7d3b19 40%, #1c080b 100%);
   background-size: cover;
@@ -952,6 +954,51 @@ h2 {
   box-shadow: 0 16px 36px rgba(50, 10, 18, .16);
 }
 
+/* Event card overlay (darkened with title) */
+.event-card__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,.55) 100%);
+  border-radius: inherit;
+}
+.event-card__title {
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: .04em;
+  text-shadow: 0 1px 4px rgba(0,0,0,.4);
+}
+
+/* Carousel header (event title + counter) */
+.event-carousel__header {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  text-align: center;
+  color: #fff;
+  pointer-events: none;
+}
+.event-carousel__event-title {
+  margin: 0 0 4px;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+.event-carousel__counter {
+  font-size: 13px;
+  opacity: .8;
+  letter-spacing: .1em;
+}
+
 /* --- Modal / Lightbox (scroll-snap bottom-sheet) --- */
 .modal-overlay {
   position: fixed;
@@ -1220,7 +1267,7 @@ h2 {
   gap: 16px;
   width: 100%;
   height: 100%;
-  padding: 60px 80px;
+  padding: 60px calc(50% - min(210px, 40vw));
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -1229,6 +1276,10 @@ h2 {
   scrollbar-width: none;
   overscroll-behavior: contain;
   touch-action: pan-x;
+  transition: opacity .2s ease;
+}
+.event-carousel__track.is-transitioning {
+  opacity: 0;
 }
 .event-carousel__track::-webkit-scrollbar { display: none; }
 
@@ -1346,13 +1397,13 @@ h2 {
   /* Carousel mobile: hide arrows, show peek edges */
   .event-carousel__arrow { display: none; }
   .event-carousel__track {
-    padding: 40px 24px;
+    padding: 60px 36px 40px;
     gap: 12px;
-    scroll-padding: 24px;
   }
   .event-carousel__slide {
     flex: 0 0 calc(100vw - 72px);
     height: min(520px, 70vh);
+    scroll-snap-align: center;
     opacity: 1;
     transform: none;
     transition: none;
@@ -1389,13 +1440,13 @@ h2 {
 
   /* Carousel: tighter peek on small screens */
   .event-carousel__track {
-    padding: 40px 16px;
+    padding: 60px 28px 40px;
     gap: 10px;
-    scroll-padding: 16px;
   }
   .event-carousel__slide {
     flex: 0 0 calc(100vw - 56px);
     height: min(480px, 68vh);
+    scroll-snap-align: center;
   }
   .event-carousel__info {
     padding: 16px 18px;

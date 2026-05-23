@@ -248,22 +248,265 @@
     `;
   }
 
-  // --- Render Events (horizontal scroll) ---
+  // --- Render Events (gallery with sub-events) ---
+  let currentEventIndex = 0;
+  let currentSubEventIndex = 0;
+  let eventsViewMode = 'grid'; // 'grid' or 'detail'
+  let isCarouselTransitioning = false;
+
   function renderEvents() {
     const el = document.querySelector('[data-events]');
     if (!el) return;
 
-    const { title, images, link } = menu_data.events;
+    const { title, items } = menu_data.events;
 
     el.innerHTML = `
       <div class="section-heading section-heading--center">
         <h2>${title}</h2>
       </div>
       <div class="events__scroll" data-events-scroll>
-        ${images.map((img, i) => `<article class="event-card" data-event-index="${i}" style="--event-image: url('${img.src}')" role="button" tabindex="0"></article>`).join('')}
+        ${items.map((event, i) => `
+          <article class="event-card" data-event-index="${i}" role="button" tabindex="0" style="--event-image: url('${event.general_image}')">
+            <div class="event-card__overlay">
+              <span class="event-card__title">${event.title}</span>
+            </div>
+          </article>
+        `).join('')}
       </div>
     `;
   }
+
+  // --- Event Carousel (sub-events) ---
+  let eventCarouselEl = null;
+
+  function initEventCarousel() {
+    const carousel = document.createElement('div');
+    carousel.className = 'event-carousel-overlay';
+    carousel.setAttribute('data-event-carousel', '');
+    carousel.innerHTML = `
+      <button class="event-carousel__close" type="button" data-carousel-close aria-label="Закрыть">×</button>
+      <div class="event-carousel__header">
+        <h3 class="event-carousel__event-title" data-carousel-event-title></h3>
+        <div class="event-carousel__counter" data-carousel-counter></div>
+      </div>
+      <button class="event-carousel__arrow event-carousel__arrow--prev" type="button" data-carousel-prev aria-label="Предыдущее">‹</button>
+      <button class="event-carousel__arrow event-carousel__arrow--next" type="button" data-carousel-next aria-label="Следующее">›</button>
+      <div class="event-carousel__track" data-carousel-track></div>
+    `;
+    document.body.appendChild(carousel);
+    return carousel;
+  }
+
+  eventCarouselEl = initEventCarousel();
+
+  function buildCarouselSlides() {
+    const track = eventCarouselEl.querySelector('[data-carousel-track]');
+    const { items } = menu_data.events;
+    const event = items[currentEventIndex];
+
+    track.innerHTML = event.subevents.map((sub, i) => `
+      <div class="event-carousel__slide${i === currentSubEventIndex ? ' is-active' : ''}" data-slide-index="${i}">
+        <div class="event-carousel__card">
+          <div class="event-carousel__image" style="background-image: url('${sub.image}')"></div>
+          <div class="event-carousel__info">
+            <h3 class="event-carousel__title">${sub.title}</h3>
+            <p class="event-carousel__desc">${sub.description}</p>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateCarouselHeader() {
+    const { items } = menu_data.events;
+    const event = items[currentEventIndex];
+    eventCarouselEl.querySelector('[data-carousel-event-title]').textContent = event.title;
+    eventCarouselEl.querySelector('[data-carousel-counter]').textContent = `${currentSubEventIndex + 1} / ${event.subevents.length}`;
+  }
+
+  function scrollToSlide(index, smooth) {
+    const track = eventCarouselEl.querySelector('[data-carousel-track]');
+    const slides = track.querySelectorAll('.event-carousel__slide');
+    if (!slides[index]) return;
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('is-active', i === index);
+    });
+
+    if (!smooth) {
+      // Direct scroll reset for instant positioning (more reliable on mobile)
+      const slideEl = slides[index];
+      const trackRect = track.getBoundingClientRect();
+      const slideRect = slideEl.getBoundingClientRect();
+      const offset = slideRect.left - trackRect.left + track.scrollLeft - (trackRect.width - slideRect.width) / 2;
+      track.scrollLeft = Math.max(0, offset);
+    } else {
+      slides[index].scrollIntoView({
+        inline: 'center',
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  function openEventCarousel(index) {
+    currentEventIndex = index;
+    currentSubEventIndex = 0;
+    eventsViewMode = 'detail';
+
+    buildCarouselSlides();
+    updateCarouselHeader();
+    updateArrowState();
+
+    requestAnimationFrame(() => {
+      eventCarouselEl.classList.add('is-open');
+      document.body.classList.add('is-locked');
+      scrollToSlide(currentSubEventIndex, false);
+    });
+  }
+
+  function closeEventCarousel() {
+    eventCarouselEl.classList.remove('is-open');
+    document.body.classList.remove('is-locked');
+    eventsViewMode = 'grid';
+  }
+
+  function navigateCarousel(direction) {
+    const { items } = menu_data.events;
+    const event = items[currentEventIndex];
+    let needsRebuild = false;
+
+    if (direction === 1) {
+      if (currentSubEventIndex < event.subevents.length - 1) {
+        currentSubEventIndex++;
+      } else if (currentEventIndex < items.length - 1) {
+        currentEventIndex++;
+        currentSubEventIndex = 0;
+        needsRebuild = true;
+      } else {
+        return;
+      }
+    } else {
+      if (currentSubEventIndex > 0) {
+        currentSubEventIndex--;
+      } else if (currentEventIndex > 0) {
+        currentEventIndex--;
+        const prevEvent = items[currentEventIndex];
+        currentSubEventIndex = prevEvent.subevents.length - 1;
+        needsRebuild = true;
+      } else {
+        return;
+      }
+    }
+
+    if (needsRebuild) {
+      if (isCarouselTransitioning) return;
+      isCarouselTransitioning = true;
+      const track = eventCarouselEl.querySelector('[data-carousel-track]');
+      track.classList.add('is-transitioning');
+      updateCarouselHeader();
+      setTimeout(() => {
+        track.scrollLeft = 0;
+        buildCarouselSlides();
+        updateArrowState();
+        // Double rAF ensures DOM is painted before we scroll
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            scrollToSlide(currentSubEventIndex, false);
+            track.classList.remove('is-transitioning');
+            setTimeout(() => { isCarouselTransitioning = false; }, 50);
+          });
+        });
+      }, 250);
+    } else {
+      updateCarouselHeader();
+      updateArrowState();
+      scrollToSlide(currentSubEventIndex, true);
+    }
+  }
+
+  function updateArrowState() {
+    const { items } = menu_data.events;
+    const isFirst = currentEventIndex === 0 && currentSubEventIndex === 0;
+    const lastEvent = items[items.length - 1];
+    const isLast = currentEventIndex === items.length - 1 && currentSubEventIndex === lastEvent.subevents.length - 1;
+
+    const prevBtn = eventCarouselEl.querySelector('[data-carousel-prev]');
+    const nextBtn = eventCarouselEl.querySelector('[data-carousel-next]');
+
+    prevBtn.classList.toggle('is-hidden', isFirst);
+    nextBtn.classList.toggle('is-hidden', isLast);
+  }
+
+  // Detect which slide is centered after scroll (for mobile swipe)
+  (function initCarouselScrollDetect() {
+    const track = eventCarouselEl.querySelector('[data-carousel-track]');
+    let scrollTimeout;
+
+    track.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (isCarouselTransitioning) return;
+        const slides = track.querySelectorAll('.event-carousel__slide');
+        if (!slides.length) return;
+        const trackRect = track.getBoundingClientRect();
+        const trackCenter = trackRect.left + trackRect.width / 2;
+        let closestIdx = currentSubEventIndex;
+        let closestDist = Infinity;
+
+        slides.forEach((slide, i) => {
+          const slideRect = slide.getBoundingClientRect();
+          const slideCenter = slideRect.left + slideRect.width / 2;
+          const dist = Math.abs(slideCenter - trackCenter);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestIdx = i;
+          }
+        });
+
+        if (closestIdx !== currentSubEventIndex) {
+          currentSubEventIndex = closestIdx;
+          updateCarouselHeader();
+          updateArrowState();
+          slides.forEach((slide, i) => {
+            slide.classList.toggle('is-active', i === currentSubEventIndex);
+          });
+        }
+      }, 30);
+    });
+
+    // Touch swipe to detect overscroll for event transitions on mobile
+    let touchStartX = 0;
+    let touchStartScrollLeft = 0;
+
+    track.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartScrollLeft = track.scrollLeft;
+    }, { passive: true });
+
+    track.addEventListener('touchend', (e) => {
+      if (isCarouselTransitioning) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) < 40) return;
+
+      const { items } = menu_data.events;
+      const event = items[currentEventIndex];
+      const slides = track.querySelectorAll('.event-carousel__slide');
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      const atEnd = track.scrollLeft >= maxScroll - 20 || currentSubEventIndex >= event.subevents.length - 1;
+      const atStart = track.scrollLeft <= 20 || currentSubEventIndex === 0;
+
+      // Swiped left at end → next event
+      if (dx < -40 && atEnd && currentEventIndex < items.length - 1) {
+        navigateCarousel(1);
+        return;
+      }
+      // Swiped right at start → previous event
+      if (dx > 40 && atStart && currentEventIndex > 0) {
+        navigateCarousel(-1);
+        return;
+      }
+    }, { passive: true });
+  })();
 
   // --- Render Footer ---
   function renderFooter() {
@@ -407,133 +650,6 @@
     });
   }
 
-  // --- Event Carousel ---
-  let eventCarouselEl = null;
-  let currentEventIndex = 0;
-
-  function initEventCarousel() {
-    const carousel = document.createElement('div');
-    carousel.className = 'event-carousel-overlay';
-    carousel.setAttribute('data-event-carousel', '');
-    carousel.innerHTML = `
-      <button class="event-carousel__close" type="button" data-carousel-close aria-label="Закрыть">×</button>
-      <button class="event-carousel__arrow event-carousel__arrow--prev" type="button" data-carousel-prev aria-label="Предыдущее">‹</button>
-      <button class="event-carousel__arrow event-carousel__arrow--next" type="button" data-carousel-next aria-label="Следующее">›</button>
-      <div class="event-carousel__track" data-carousel-track></div>
-    `;
-    document.body.appendChild(carousel);
-    return carousel;
-  }
-
-  eventCarouselEl = initEventCarousel();
-
-  function buildCarouselSlides() {
-    const track = eventCarouselEl.querySelector('[data-carousel-track]');
-    const images = menu_data.events.images;
-
-    track.innerHTML = images.map((img, i) => `
-      <div class="event-carousel__slide" data-slide-index="${i}">
-        <div class="event-carousel__card">
-          <div class="event-carousel__image" style="background-image: url('${img.src}')"></div>
-          <div class="event-carousel__info">
-            ${img.title ? `<h3 class="event-carousel__title">${img.title}</h3>` : ''}
-            ${img.description ? `<p class="event-carousel__desc">${img.description}</p>` : ''}
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // Build slides once
-  buildCarouselSlides();
-
-  function scrollToSlide(index, smooth) {
-    const track = eventCarouselEl.querySelector('[data-carousel-track]');
-    const slides = track.querySelectorAll('.event-carousel__slide');
-    if (!slides[index]) return;
-
-    // Update active class
-    slides.forEach((slide, i) => {
-      slide.classList.toggle('is-active', i === index);
-    });
-
-    // Scroll to the target slide
-    slides[index].scrollIntoView({
-      inline: 'center',
-      behavior: smooth ? 'smooth' : 'instant'
-    });
-  }
-
-  function openEventCarousel(index) {
-    currentEventIndex = index;
-    updateArrowState();
-
-    requestAnimationFrame(() => {
-      eventCarouselEl.classList.add('is-open');
-      document.body.classList.add('is-locked');
-      // Instant scroll on open (no animation needed for initial position)
-      scrollToSlide(currentEventIndex, false);
-    });
-  }
-
-  function closeEventCarousel() {
-    eventCarouselEl.classList.remove('is-open');
-    document.body.classList.remove('is-locked');
-  }
-
-  function navigateCarousel(direction) {
-    const images = menu_data.events.images;
-    const newIndex = currentEventIndex + direction;
-    if (newIndex < 0 || newIndex >= images.length) return;
-
-    currentEventIndex = newIndex;
-    updateArrowState();
-    scrollToSlide(currentEventIndex, true);
-  }
-
-  function updateArrowState() {
-    const images = menu_data.events.images;
-    const prevBtn = eventCarouselEl.querySelector('[data-carousel-prev]');
-    const nextBtn = eventCarouselEl.querySelector('[data-carousel-next]');
-
-    prevBtn.classList.toggle('is-hidden', currentEventIndex === 0);
-    nextBtn.classList.toggle('is-hidden', currentEventIndex === images.length - 1);
-  }
-
-  // Detect which slide is centered after scroll (for mobile swipe)
-  (function initCarouselScrollDetect() {
-    const track = eventCarouselEl.querySelector('[data-carousel-track]');
-    let scrollTimeout;
-
-    track.addEventListener('scroll', () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        const slides = track.querySelectorAll('.event-carousel__slide');
-        const trackRect = track.getBoundingClientRect();
-        const trackCenter = trackRect.left + trackRect.width / 2;
-        let closestIdx = currentEventIndex;
-        let closestDist = Infinity;
-
-        slides.forEach((slide, i) => {
-          const slideRect = slide.getBoundingClientRect();
-          const slideCenter = slideRect.left + slideRect.width / 2;
-          const dist = Math.abs(slideCenter - trackCenter);
-          if (dist < closestDist) {
-            closestDist = dist;
-            closestIdx = i;
-          }
-        });
-
-        if (closestIdx !== currentEventIndex) {
-          currentEventIndex = closestIdx;
-          updateArrowState();
-          slides.forEach((slide, i) => {
-            slide.classList.toggle('is-active', i === currentEventIndex);
-          });
-        }
-      }, 80);
-    });
-  })();
 
   function closeModal() {
     modalEl.classList.remove('is-open');
@@ -604,7 +720,6 @@
     if (event.target.closest('[data-carousel-next]')) {
       navigateCarousel(1);
     }
-    // Close carousel on overlay or track background click (not on a card)
     if (event.target.matches('[data-event-carousel]') ||
         (event.target.matches('[data-carousel-track]') && !event.target.closest('.event-carousel__slide'))) {
       closeEventCarousel();
@@ -617,7 +732,6 @@
       closeModal();
       closeEventCarousel();
     }
-    // Arrow keys for carousel
     if (eventCarouselEl.classList.contains('is-open')) {
       if (event.key === 'ArrowLeft') navigateCarousel(-1);
       if (event.key === 'ArrowRight') navigateCarousel(1);

@@ -15,7 +15,7 @@
     ],
     "contacts": {
       "phone": { "label": "+7 (903) 923-31-11", "href": "tel:+79039233111" },
-      "email": { "label": "yakimova101077@gmail.com", "href": "mailto:yakimova101077@gmail.com" }
+      "email": { "label": "", "href": "" }
     },
     "cta": {
       "label": "Заказать мероприятие",
@@ -180,15 +180,74 @@
   },
   "events": {
     "title": "Наши мероприятия",
-    "images": [
-      { "src": "../assets/images/events/s.webp", "title": "Корпоративный фуршет", "description": "Организация фуршета на 200 гостей для IT-компании с авторским меню и коктейльным баром." },
-      { "src": "../assets/images/events/s.webp", "title": "Свадебный банкет", "description": "Изысканный свадебный ужин в загородной резиденции с дегустационным сетом из 7 перемен." },
-      { "src": "../assets/images/events/s.webp", "title": "Гала-ужин", "description": "Торжественный гала-ужин с живой музыкой, авторской кухней и безупречным сервисом." },
-      { "src": "../assets/images/events/s.webp", "title": "Кофе-брейк", "description": "Организация кофе-брейков для деловых конференций с мини-десертами и напитками." },
-      { "src": "../assets/images/events/s.webp", "title": "Частная вечеринка", "description": "Камерная вечеринка на 30 гостей с тематическим меню и персональным шеф-поваром." },
-      { "src": "../assets/images/events/s.webp", "title": "Презентация продукта", "description": "Фуршетное сопровождение презентации нового бренда с канапе и игристым." }
-    ],
-    "link": { "label": "Смотреть все работы →", "href": "#contacts" }
+    "items": [
+      {
+        "title": "Luisa Spagnoli",
+        "general_image": "../assets/images/events/Luisa_Spagnoli_general.webp",
+        "subevents": [
+          {
+            "image": "../assets/images/events/Luisa_Spagnoli_др.webp",
+            "title": "День рождения бутика",
+            "description": "Праздничный фуршет с игристым, канапе и авторской подачей"
+          },
+          {
+            "image": "../assets/images/events/Luisa_Spagnoli_клиентский_день.webp",
+            "title": "Презентация коллекции",
+            "description": "Изысканный дегустационный сет для гостей презентации"
+          },
+          {
+            "image": "../assets/images/events/Luisa_Spagnoli_презентация.webp",
+            "title": "Клиентский день",
+            "description": "Мини-закуски для клиентов бутика"
+          }
+        ]
+      },
+      {
+        "title": "Сеть бутиков Max Mara",
+        "general_image": "../assets/images/events/MaxMara1.webp",
+        "subevents": [
+          { "image": "../assets/images/events/MaxMara1.webp", "title": "Презентации новых коллекций", "description": "Создали фуд-концепцию, гармонично сочетающуюся с элегантностью бутика и идеей вечера, подчеркнув стилистику мероприятия." },
+          { "image": "../assets/images/events/MaxMara2.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/MaxMara3.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/MaxMara4.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/MaxMara5.webp", "title": "", "description": "" }
+        ]
+      },
+      {
+        "title": "Гастрономическое сопровождение мероприятий проекта «Глубина»",
+        "general_image": "../assets/images/events/Глубина1.webp",
+        "subevents": [
+          { "image": "../assets/images/events/Глубина6.webp", "title": "Мероприятие проекта «Глубина»", "description": "" },
+          { "image": "../assets/images/events/Глубина2.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Глубина3.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Глубина4.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Глубина5.webp", "title": "", "description": "" }
+        ]
+      },
+      {
+        "title": "Фуршеты с индивидуальным стилем и атмосферой под ваш запрос",
+        "general_image": "../assets/images/events/Идея1.webp",
+        "subevents": [
+          { "image": "../assets/images/events/Идея5.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Идея2.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Идея3.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Идея4.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Идея6.webp", "title": "", "description": "" }
+        ]
+      },
+      {
+        "title": "Организация фуршетов на детских праздниках",
+        "general_image": "../assets/images/events/Дети8.webp",
+        "subevents": [
+          { "image": "../assets/images/events/Дети1.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Дети2.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Дети3.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Дети5.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Дети6.webp", "title": "", "description": "" },
+          { "image": "../assets/images/events/Дети7.webp", "title": "", "description": "" }
+        ]
+      }
+    ]
   },
   "footer": {
     "brand": {
@@ -196,7 +255,7 @@
     },
     "socials": [
       { "label": "Telegram", "href": "https://t.me/canapeboutique", "icon": "assets/images/logo/telegram.svg" },
-      { "label": "Instagram", "href": "#", "icon": "assets/images/logo/instagram.svg" }
+      { "label": "Instagram", "href": "https://instagram.com/canape.boutique", "icon": "assets/images/logo/instagram.svg" }
     ],
     "nav": {
       "title": "Навигация",
@@ -212,13 +271,12 @@
       "title": "Контакты",
       "items": [
         { "icon": "☎", "label": "+7 (903) 923-37-11", "href": "tel:+79039233711" },
-        { "icon": "✉", "label": "yakimova101077@gmail.com", "href": "mailto:yakimova101077@gmail.com" },
-        { "icon": "⌖", "label": "Красноярск, ул. - , 1" }
+        { "icon": "⌖", "label": "Красноярск, ул. Академика Киренского, д. 22, пом. 153" }
       ]
     },
     "requisites": {
       "title": "Реквизиты",
-      "text": "ИП Иванова И.И.<br>ИНН 123456789012<br>ОГРНИП 123456789012345<br>Р/с 12345678901234567890<br>АО «Премиум Банк»<br>К/с 30101810000000000777<br>БИК 044525777"
+      "text": "ИП Беляева М.Г.<br>ИНН 246310628277<br>ОГРНИП 326246800077272<br>"
     },
     "copyright": "© CANAPE 2024 — Все права защищены"
   },
