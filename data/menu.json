@@ -14,7 +14,7 @@
       { "label": "Контакты", "href": "#contacts" }
     ],
     "contacts": {
-      "phone": { "label": "+7 (903) 923-31-11", "href": "tel:+79039233111" },
+      "phone": { "label": "+7 (903) 923-37-11", "href": "tel:+79039233711" },
       "email": { "label": "", "href": "" }
     },
     "cta": {
