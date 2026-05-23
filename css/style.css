@@ -1314,6 +1314,7 @@ h2 {
 .event-carousel__image {
   flex: 1;
   min-height: 200px;
+  background-image: var(--slide-bg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

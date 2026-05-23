@@ -307,7 +307,7 @@
     track.innerHTML = event.subevents.map((sub, i) => `
       <div class="event-carousel__slide${i === currentSubEventIndex ? ' is-active' : ''}" data-slide-index="${i}">
         <div class="event-carousel__card">
-          <div class="event-carousel__image" style="background-image: url('${sub.image}')"></div>
+          <div class="event-carousel__image" style="--slide-bg: url('${sub.image}')"></div>
           <div class="event-carousel__info">
             <h3 class="event-carousel__title">${sub.title}</h3>
             <p class="event-carousel__desc">${sub.description}</p>
